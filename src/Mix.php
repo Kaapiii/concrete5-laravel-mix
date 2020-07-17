@@ -85,32 +85,38 @@ final class Mix implements MixInterface
      */
     public function printAsset(string $mixAssetPath, $options = [])
     {
+        $tag = '';
         $assets = $this->getMixAssets();
-
-        if ($this->endsWith($mixAssetPath,'css')) {
-            // css
-            if (array_key_exists($mixAssetPath, $assets)) {
-
-                $assetUrl = $this->getAssetBasePath() . $assets[$mixAssetPath];
-                echo '<link type="text/css" rel="stylesheet" href="' . $assetUrl . '" />';
-            }
-        } else if ($this->endsWith($mixAssetPath,'js')) {
-            // js options
-            $allowedTagOptions = ['defer', 'async'];
-            $tag = '';
-            if (is_countable($options) && in_array($allowedTagOptions, $options, true)) {
-                $tag = $options[0];
-            }
-
-            // js
-            if (array_key_exists($mixAssetPath, $assets)) {
-
-                $assetUrl = $this->getAssetBasePath() . $assets[$mixAssetPath];
-                echo '<script ' . $tag . 'src="' . $assetUrl . '"></script>';
-            }
+        $extension = pathinfo($mixAssetPath, PATHINFO_EXTENSION);
+        switch (strtolower($extension)) {
+            case 'css':
+                if (array_key_exists($mixAssetPath, $assets)) {
+                    $assetUrl = $this->getAssetBasePath() . $assets[$mixAssetPath];
+                    echo '<link type="text/css" rel="stylesheet" href="' . $assetUrl . '" />';
+                }
+                break;
+            case 'js':
+                // js options
+                if (is_countable($options) && $this->isAllowedScriptAttribute($options)) {
+                    $tag = $options[0] . ' ';
+                }
+                // js
+                if (array_key_exists($mixAssetPath, $assets)) {
+                    $assetUrl = $this->getAssetBasePath() . $assets[$mixAssetPath];
+                    echo '<script ' . $tag . 'src="' . $assetUrl . '"></script>';
+                }
+                break;
+            default:
+                throw new \InvalidArgumentException('Invalid extension provided. Only js and css are supported.');
         }
     }
 
+
+    protected function isAllowedScriptAttribute($options)
+    {
+        $allowedTagOptions = ['defer', 'async'];
+        return count(array_intersect($options, $allowedTagOptions));
+    }
 
     /**
      * Set the path to the mix-manifest.json file
