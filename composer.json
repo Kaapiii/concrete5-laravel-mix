@@ -22,12 +22,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Kaapiii\\Concrete5\\LaravelMix": "src"
+      "Kaapiii\\Concrete5\\LaravelMix\\": "src"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Kaapiii\\Concrete5\\LaravelMix\\Test": "tests"
+      "Kaapiii\\Concrete5\\LaravelMix\\Test\\": "tests"
     }
   },
   "scripts": {
