@@ -3,8 +3,13 @@
 namespace Kaapiii\Concrete5\LaravelMix\Test;
 
 use Kaapiii\Concrete5\LaravelMix\Mix;
+use Kaapiii\Concrete5\LaravelMix\MixException;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class MixTest
+ * @coversDefaultClass \Kaapiii\Concrete5\LaravelMix\Mix
+ */
 class MixTest extends TestCase
 {
 
@@ -25,17 +30,26 @@ class MixTest extends TestCase
     }
 
     /**
-     * @dataProvider setAssetBasePathProvider
+     * @covers \Kaapiii\Concrete5\LaravelMix\Mix::setAssetBasePath
+     * @dataProvider assetBasePathProvider
      */
     public function testSetAssetBasePath($path, $result)
     {
         $this->mix->setAssetBasePath($path);
-        $cleaned = $this->mix->getAssetBasePath();
-
-        $this->assertEquals($result, $cleaned);
+        $this->assertEquals($result, $this->mix->getAssetBasePath());
     }
 
-    public function setAssetBasePathProvider()
+    /**
+     * @covers \Kaapiii\Concrete5\LaravelMix\Mix::getAssetBasePath
+     * @dataProvider assetBasePathProvider
+     */
+    public function testGetAssetBasePath($path, $result)
+    {
+        $this->mix->setAssetBasePath($path);
+        $this->assertEquals($result, $this->mix->getAssetBasePath());
+    }
+
+    public function assetBasePathProvider()
     {
         return [
             ['/some/path/', '/some/path'],
@@ -45,28 +59,51 @@ class MixTest extends TestCase
         ];
     }
 
-    public function getAssetBasePath()
-    {
-        $this->assertTrue(true);
-    }
 
     public function testPrintAsset()
     {
         $this->assertTrue(true);
     }
 
-    public function testSetMixManifestPath()
+
+    /**
+     * Test if only the folder path is inserted into "setMixManifestPath" the file is still found.
+     *
+     * @covers \Kaapiii\Concrete5\LaravelMix\Mix::setMixManifestPath
+     */
+    public function testSetMixManifestPathWithoutManifestFile()
     {
+        // Expected: /resources/mix-manifest.json
+        // Provided: /resources
+        $expected = '/resources/mix-manifest.json';
+        $rfClass = '\Kaapiii\Concrete5\LaravelMix\Mix';
+        $rfMethod = 'setMixManifestPath';
+
         // method is private -> set to public with reflection class
+        $method = new \ReflectionMethod($rfClass, $rfMethod);
+        $method->setAccessible(true);
 
-        /*$method = new ReflectionMethod(
-        //Class , Method
-            'Foo', 'doSomethingPrivate'
-        );*/
+        $mixManifest = __DIR__ . DIRECTORY_SEPARATOR . 'resources';
+        $mix = new Mix($mixManifest);
 
-        //$method->setAccessible(TRUE);
-        $this->assertTrue(true);
+        $this->assertStringContainsString($expected, $mix->getMixManifestPath());
     }
+
+    /**
+     * Test thwoing of exception if provided an invalid mix manifest path
+     *
+     * @covers \Kaapiii\Concrete5\LaravelMix\Mix::setMixManifestPath
+     *
+     * @throws MixException
+     */
+    public function testThrowMixExceptionInvalidMixManifestPath()
+    {
+        $this->expectException(MixException::class);
+
+        $invalidMixManifestPath = __DIR__ . DIRECTORY_SEPARATOR . 'wrongPath';
+        $mix = new Mix($invalidMixManifestPath);
+    }
+
 
     public function testGetMixAssets()
     {
@@ -79,6 +116,7 @@ class MixTest extends TestCase
     }
 
     /**
+     * @covers \Kaapiii\Concrete5\LaravelMix\Mix::endsWith
      * @dataProvider endsWithProvider
      */
     public function testEndsWith($string, $endsWith, $result)
