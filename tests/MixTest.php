@@ -76,12 +76,6 @@ class MixTest extends TestCase
         // Expected: /resources/mix-manifest.json
         // Provided: /resources
         $expected = '/resources/mix-manifest.json';
-        $rfClass = '\Kaapiii\Concrete5\LaravelMix\Mix';
-        $rfMethod = 'setMixManifestPath';
-
-        // method is private -> set to public with reflection class
-        $method = new \ReflectionMethod($rfClass, $rfMethod);
-        $method->setAccessible(true);
 
         $mixManifest = __DIR__ . DIRECTORY_SEPARATOR . 'resources';
         $mix = new Mix($mixManifest);
@@ -90,7 +84,7 @@ class MixTest extends TestCase
     }
 
     /**
-     * Test thwoing of exception if provided an invalid mix manifest path
+     * Test throwing an exception if provided an invalid mix manifest path
      *
      * @covers \Kaapiii\Concrete5\LaravelMix\Mix::setMixManifestPath
      *
@@ -105,9 +99,49 @@ class MixTest extends TestCase
     }
 
 
+    /**
+     * @covers \Kaapiii\Concrete5\LaravelMix\Mix::getMixAssets
+     * @covers \Kaapiii\Concrete5\LaravelMix\Mix::parseMixManifest
+     *
+     * @throws MixException
+     * @throws \ReflectionException
+     */
     public function testGetMixAssets()
     {
-        $this->assertTrue(true);
+        $rfClass = '\Kaapiii\Concrete5\LaravelMix\Mix';
+        $rfMethod = 'getMixAssets';
+        $expectedKey = '/css/main.css';
+
+
+        $mixManifest = __DIR__ . DIRECTORY_SEPARATOR . 'resources';
+        $mix = new Mix($mixManifest);
+
+        // method is private -> set to public with reflection class
+        $method = new \ReflectionMethod($rfClass, $rfMethod);
+        $method->setAccessible(true);
+
+        // invoke the as public declared method with the new created "mix" object
+        $assets = $method->invoke($mix);
+
+        $this->assertIsArray($assets,'Assets are not a array');
+        $this->assertArrayHasKey($expectedKey, $assets, "Expected key ($expectedKey) is not present");
+    }
+
+    /**
+     * Test if JsonException and MixException is thrown if an invalid mix-manifest.json
+     * is provided
+     *
+     * @covers \Kaapiii\Concrete5\LaravelMix\Mix::getMixAssets
+     * @covers \Kaapiii\Concrete5\LaravelMix\Mix::parseMixManifest
+     *
+     * @throws MixException
+     */
+    public function testMixManifestDecodingJsonError()
+    {
+        $this->expectException(MixException::class);
+
+        $mixManifest = __DIR__ . DIRECTORY_SEPARATOR . 'resources/failing';
+        $mix = new Mix($mixManifest);
     }
 
     public function testParseMixManifest()
