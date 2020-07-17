@@ -43,28 +43,6 @@ final class Mix implements MixInterface
     }
 
     /**
-     * Set the path to the mix-manifest.json file
-     *
-     * @param string $path
-     * @throws MixException
-     */
-    public function setMixManifestPath(string $path)
-    {
-        // only folder path was provided, add the mix-manifest.json to the path
-        if (!$this->endsWith($path, $this->mixManifestKey)) {
-            $path = rtrim($path, '/') . '/' . $this->mixManifestKey;
-        }
-
-        // Check if file exists
-        if (!file_exists($path)) {
-            throw new MixException('mix-manifest.json does not exist under the provided path: ' . $path);
-        }
-
-        $this->mixManifestPath = $path;
-    }
-
-
-    /**
      * Set manually the base path for the laravel mix assets
      * The folder path should start from the public directory
      * Example: for a theme -> "/packages/my_theme/themes/mytheme"
@@ -131,6 +109,28 @@ final class Mix implements MixInterface
                 echo '<script ' . $tag . 'src="' . $assetUrl . '"></script>';
             }
         }
+    }
+
+
+    /**
+     * Set the path to the mix-manifest.json file
+     *
+     * @param string $path
+     * @throws MixException
+     */
+    private function setMixManifestPath(string $path)
+    {
+        // only folder path was provided, add the mix-manifest.json to the path
+        if (!$this->endsWith($path, $this->mixManifestKey)) {
+            $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $this->mixManifestKey;
+        }
+
+        // Check if file exists
+        if (!file_exists($path)) {
+            throw new MixException('mix-manifest.json does not exist under the provided path: ' . $path);
+        }
+
+        $this->mixManifestPath = $path;
     }
 
     /**
