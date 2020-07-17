@@ -10,7 +10,7 @@
          processIsolation="false"
          stopOnFailure="false">
     <testsuites>
-        <testsuite name="Kaapiii C5 laravel mix Test">
+        <testsuite name="mix">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
