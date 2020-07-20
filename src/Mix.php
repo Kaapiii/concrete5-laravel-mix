@@ -87,35 +87,50 @@ final class Mix implements MixInterface
     {
         $tag = '';
         $assets = $this->getMixAssets();
+
+        // Check if path has a trailing slash
+        $mixAssetPath = '/' . trim($mixAssetPath, '/');
+
         $extension = pathinfo($mixAssetPath, PATHINFO_EXTENSION);
         switch (strtolower($extension)) {
             case 'css':
                 if (array_key_exists($mixAssetPath, $assets)) {
                     $assetUrl = $this->getAssetBasePath() . $assets[$mixAssetPath];
-                    echo '<link type="text/css" rel="stylesheet" href="' . $assetUrl . '" />';
+                } else {
+                    // fallback to file without versioned query string
+                    $assetUrl = $this->getAssetBasePath() . $mixAssetPath;
                 }
+                echo '<link type="text/css" rel="stylesheet" href="' . $assetUrl . '" />';
                 break;
             case 'js':
                 // js options
-                if (is_countable($options) && $this->isAllowedScriptAttribute($options)) {
+                if (is_countable($options) && $this->isScriptAttributeAllowed($options)) {
                     $tag = $options[0] . ' ';
                 }
                 // js
                 if (array_key_exists($mixAssetPath, $assets)) {
                     $assetUrl = $this->getAssetBasePath() . $assets[$mixAssetPath];
-                    echo '<script ' . $tag . 'src="' . $assetUrl . '"></script>';
+                } else {
+                    // fallback to file without versioned query string
+                    $assetUrl = $this->getAssetBasePath() . $mixAssetPath;
                 }
+                echo '<script ' . $tag . 'src="' . $assetUrl . '"></script>';
                 break;
             default:
                 throw new \InvalidArgumentException('Invalid extension provided. Only js and css are supported.');
         }
     }
 
-
-    protected function isAllowedScriptAttribute($options)
+    /**
+     * Check for allowed script attributes
+     *
+     * @param $options
+     * @return bool
+     */
+    protected function isScriptAttributeAllowed($options)
     {
         $allowedTagOptions = ['defer', 'async'];
-        return count(array_intersect($options, $allowedTagOptions));
+        return (bool) count(array_intersect($options, $allowedTagOptions));
     }
 
     /**

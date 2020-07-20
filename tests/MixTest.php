@@ -59,12 +59,32 @@ class MixTest extends TestCase
         ];
     }
 
-
-    public function testPrintAsset()
+    /**
+     * @dataProvider printAssetProvider
+     */
+    public function testPrintAsset($asset, $options, $expected)
     {
-        $this->assertTrue(true);
+        $this->expectOutputString($expected);
+        $this->mix->printAsset($asset, $options);
     }
 
+    public function printAssetProvider()
+    {
+        return [
+            // path, options, expected echo
+            ['/dist/css/main.css', [], '<link type="text/css" rel="stylesheet" href="/dist/css/main.css?id=fd593dbed17d9fd9391f" />'],
+            ['/dist/js/main.js', [], '<script src="/dist/js/main.js?id=c833b937dc546bf8c034"></script>'],
+            // asset not present in the mix-manifest.json
+            ['/css/fail.css', [], '<link type="text/css" rel="stylesheet" href="/css/fail.css" />'],
+            ['/dist/js/fail.js', [], '<script src="/dist/js/fail.js"></script>'],
+            // with async and defer attributes
+            ['/dist/js/main.js', ['async'], '<script async src="/dist/js/main.js?id=c833b937dc546bf8c034"></script>'],
+            ['/dist/js/main.js', ['defer'], '<script defer src="/dist/js/main.js?id=c833b937dc546bf8c034"></script>'],
+            // without trailing slashes
+            ['dist/css/main.css', [], '<link type="text/css" rel="stylesheet" href="/dist/css/main.css?id=fd593dbed17d9fd9391f" />'],
+            ['dist/js/main.js', [], '<script src="/dist/js/main.js?id=c833b937dc546bf8c034"></script>'],
+        ];
+    }
 
     /**
      * Test if only the folder path is inserted into "setMixManifestPath" the file is still found.
