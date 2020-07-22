@@ -1,6 +1,6 @@
 # Load (versioned) laravel mix assets easily in concrete5.
 
-[![Actions Status](https://github.com/kaapiii/concrete5-laravel-mix/workflows/main/badge.svg)](https://github.com/kaapiii/concrete5-laravel-mix/actions)
+[![Actions Status](https://github.com/kaapiii/concrete5-laravel-mix/workflows/tests/badge.svg)](https://github.com/kaapiii/concrete5-laravel-mix/actions)
 [![Latest Stable Version](https://poser.pugx.org/kaapiii/concrete5-laravel-mix/v)](//packagist.org/packages/kaapiii/concrete5-laravel-mix)
 [![Total Downloads](https://poser.pugx.org/kaapiii/concrete5-laravel-mix/downloads)](//packagist.org/packages/kaapiii/concrete5-laravel-mix)
 [![License](https://poser.pugx.org/kaapiii/concrete5-laravel-mix/license)](//packagist.org/packages/kaapiii/concrete5-laravel-mix)

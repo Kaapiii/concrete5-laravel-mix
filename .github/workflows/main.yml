@@ -1,5 +1,5 @@
 # Github action - unit tests
-name: Testing Concrete5 Laravel Mix lib
+name: tests
 on: [push, pull_request]
 jobs:
   tests:
