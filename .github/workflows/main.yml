@@ -11,20 +11,14 @@ jobs:
     name: Unit tests PHP ${{ matrix.phpversions }} on ${{ matrix.operatingsystem }}
     steps:
       - name: Checkout
-        uses: action/checkout@v2
+        uses: actions/checkout@v2
       - name: Setup PHP, with composer and extensions
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.phpversions }}
-          extensions: mbstring, dom, fileinfo
-          coverage: pcov
-          tools: php-cs-fixer, phpunit
-        # force php version update to latest path
-        env:
-          update: true
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
       - name: Test with phpunit
-        run: composer run-script --coverage-text
+        run: composer run-script test
       - name: Setup problem matchers for PHPUnit
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
